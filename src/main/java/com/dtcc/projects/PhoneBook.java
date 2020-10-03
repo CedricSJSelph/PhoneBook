@@ -1,56 +1,62 @@
 package com.dtcc.projects;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PhoneBook {
 
         //Phone number no hyphens please
-        public static HashMap<String, String> PhoneBook = new HashMap<>();
-        private static String Name;
-        private static String PhoneNumber;
+        public Map<String, List<String> > PhoneBook;
 
-        public void add(String name, String phoneNumber){
-            PhoneBook.put(name, phoneNumber);
+        public PhoneBook(){
+            this(new LinkedHashMap<String, List<String>>());
         }
 
-        public static void addAll(String name, String[] phoneNumbers){
-            for(String temp:phoneNumbers){
-                PhoneBook.put(name, temp);
+        public PhoneBook(Map<String, List<String>> map){
+            this.PhoneBook = map;
+        }
+
+        public void add(String name, String phoneNumber){
+            List<String> phoneNumberList = PhoneBook.get(name);
+            if(phoneNumberList != null){
+                phoneNumberList.add(phoneNumber);
+            }else{
+                //Singleton -> adds the phone number to names List of numbers
+                //Doing multiple things at once
+                PhoneBook.put(name, Collections.singletonList(phoneNumber));
             }
         }
 
-        public static void remove(String name){
+        public void addAll(String name, String[] phoneNumbers){
+            PhoneBook.put(name, Arrays.asList(phoneNumbers));
+        }
+
+        public void remove(String name){
             PhoneBook.remove(name);
         }
 
-        public static boolean hasEntry(String name){
+        public boolean hasEntry(String name){
            return PhoneBook.containsKey(name);
         }
 
         public List<String> lookup(String name){
-            List<String> temp = new ArrayList<>();
-            for(String val: PhoneBook.keySet()){
-                if(val.equals(name)){
-                    temp.add(PhoneBook.get(val));
-                }
-            }
-            return temp;
+            return PhoneBook.get(name);
         }
 
-//        public String reverseLookup(String phoneNumber){
-//            return PhoneBook.keys(phoneNumber)
-//        }
+        public String reverseLookup(String phoneNumber){
+            String tempString ="";
+            for(Map.Entry m: PhoneBook.entrySet()){
+                if((m.getValue().equals(Arrays.asList(phoneNumber)))){
+                    tempString += (String)m.getKey();
+                }
+            }
+            return tempString;
+        }
 
-        public static String getAllContactNames(){
-            String temp = "";
+        public List<String> getAllContactNames(){
+            List<String> temp = new ArrayList<>();
             //Entries, each entry
             for(Map.Entry m: PhoneBook.entrySet()){
-                String key = (String) m.getKey();
-                String value = (String) m.getValue();
-                temp += (key + " -> " + value + "\n");
+                temp.add((String)m.getKey());
             }
             return temp;
         }
